@@ -1,50 +1,66 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+
+- Version change: unset -> 0.1.0
+- Modified principles:
+	- [PRINCIPLE_1_NAME] (Library-First) -> Library-First
+	- [PRINCIPLE_2_NAME] (Agent-Driven Integrations) -> Agent-Driven Integrations
+	- [PRINCIPLE_3_NAME] (Test-First) -> Test-First (NON-NEGOTIABLE)
+	- [PRINCIPLE_4_NAME] (Reproducible Environments) -> Reproducible Environments & Config
+	- [PRINCIPLE_5_NAME] (Security & Privacy) -> Security, Privacy & Compliance
+- Added sections: Technology Constraints, Development Workflow
+- Removed sections: none
+- Templates requiring updates:
+	- .specify/templates/plan-template.md ⚠ pending
+	- .specify/templates/spec-template.md ⚠ pending
+	- .specify/templates/tasks-template.md ⚠ pending
+	- .specify/templates/commands/*.md ⚠ pending
+- Follow-up TODOs:
+	- TODO(RATIFICATION_DATE): original adoption date not recorded; please supply.
+-->
+
+# Speckit Testing Specifications Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Library-First
+All core functionality MUST be implemented as small, well-documented, and independently testable libraries. Libraries MUST expose clear, minimal public APIs and include automated unit tests. Rationale: modular, reusable components improve testability and reduce coupling.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Agent-Driven Integrations
+Agent implementation and integrations MUST follow an agent-first design: use the `langchain` Python framework for agent orchestration and decision logic. The system MUST be provider-agnostic: primary LLM integrations target AWS LLM services, and local LLM support via Ollama MUST be configurable. Rationale: standardizing on `langchain` ensures consistent agent patterns while preserving flexibility for providers.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Test-First (NON-NEGOTIABLE)
+Testing is mandatory and MUST follow a red-green-refactor workflow. New features or changes MUST include tests before implementation: unit tests for libraries, integration tests for agent/provider interactions, and end-to-end tests for user-facing behaviors. Rationale: prevents regressions and documents expected behavior.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Reproducible Environments & Config
+All developer and CI environments MUST be reproducible. Use containerization (Docker) or pinned virtual environments. Configuration for LLM providers MUST be explicit and separated from code: support an `aws` provider configuration and an `ollama` provider configuration toggled via environment or config file. Secrets MUST be stored in secure secret stores (e.g., AWS Secrets Manager) and never committed. Rationale: reproducibility reduces "works on my machine" issues and enables reliable CI.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Security, Privacy & Compliance
+Data handling MUST minimize sensitive data sent to LLMs. Personally identifiable information (PII) MUST be redacted or explicitly authorized. Access controls and audit logging MUST be enforced for any production LLM keys or datasets. Rationale: protect user data and comply with regulatory constraints.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Technology Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+This project targets Python 3.10+ and the `langchain` framework for agent development. LLM provider support:
+- Primary cloud provider: AWS LLM services (configured via `AWS_*` environment variables or config files).
+- Optional local provider: Ollama (configured via `OLLAMA_HOST`/`OLLAMA_PORT` or local socket). The codebase MUST include a clear provider abstraction allowing runtime selection.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Dependency management MUST use `pyproject.toml`/Poetry or `requirements.txt` with pinned versions for CI reproducibility. Container images used by CI MUST pin base image digests.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow
+
+- All changes MUST be made via pull requests with at least one approving reviewer who is a project maintainer.
+- CI pipelines MUST run unit tests, integration tests (including an isolated LLM provider mock), linting, and security scans before merge.
+- Feature branches MUST reference an issue and include a changelog entry when behavior changes.
+- Commits MUST follow the ` Conventional Commits ` style to enable automated changelogs.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Amendments to this constitution require a documented proposal (a PR) that describes the change, the rationale, and the migration plan. A change MUST be approved by at least two maintainers. The maintainer group MAY appoint a steward to adjudicate disputes.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Versioning policy:
+- Follow semantic versioning for the constitution: MAJOR for incompatible governance changes, MINOR for new principles or material additions, PATCH for editorial clarifications.
+
+Compliance checks:
+- New PRs MUST reference relevant constitution principles. The CI pipeline SHOULD flag non-compliant changes and require remediation before merge.
+
+**Version**: 0.1.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2026-03-06
